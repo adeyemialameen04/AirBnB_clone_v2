@@ -1,7 +1,10 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
+"""Documenting the user model"""
 from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
+    """
+    The amenity class
+    """
     name = ""

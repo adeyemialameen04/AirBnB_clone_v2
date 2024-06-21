@@ -1,8 +1,8 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
+"""Documenting the user model"""
 from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """ State class """
+    """The state class"""
     name = ""
