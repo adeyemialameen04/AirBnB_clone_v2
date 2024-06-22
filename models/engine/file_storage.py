@@ -17,12 +17,23 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def all(self):
+    def all(self, obj=None):
         """
         Returns all the objs in the storage.
         :return: all the objs in the storage.
         """
+        if obj is not None:
+            key = f"{obj.__class__.__name__}.{obj.id}"
+            if key in FileStorage.__objects:
+                return FileStorage.__objects[key]
         return FileStorage.__objects
+
+    def delete(self, obj=None):
+        """Delete object"""
+        if obj is not None:
+            key = f"{obj.__class__.__name__}.{obj.id}"
+            if key in FileStorage.__objects:
+                del FileStorage.__objects[key]
 
     def new(self, obj):
         """
