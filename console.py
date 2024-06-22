@@ -2,6 +2,7 @@
 """Documenting the console module"""
 import ast
 import cmd
+from os import sched_yield
 import shlex
 import re
 from models import storage
@@ -16,9 +17,22 @@ from models.amenity import Amenity
 
 class HBNBCommand(cmd.Cmd):
     """Documentation for the console"""
+
     methods = ["all()", "count()"]
 
     prompt = "(hbnb) "
+
+    def do_clear(self, arg):
+        print("\033[2J\033[H", end="", flush=True)
+
+    def convert_value(self, key, value):
+        if key in ['number_rooms', 'number_bathrooms', 'max_guest', 'price_by_night']:
+            return int(value)
+        elif '.' in value:
+            return float(value)
+        else:
+            print("\n\n", value, "\n\n")
+            return value.replace("_", " ")
 
     def parse_arg(self, arg):
         args = shlex.split(arg)
@@ -55,9 +69,31 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, arg):
         """Creates a new instance of a class."""
-        cls, _, _ = self.parse_arg(arg)
-        if cls:
-            obj = cls()
+        args = shlex.split(arg)
+        argc = len(args)
+        if argc == 0:
+            print("** class name missing **")
+            return
+
+        name = args[0]
+
+        cls = globals().get(name)
+        if cls is None:
+            print("** class doesn't exist **")
+            return
+        obj = cls()
+        if argc == 1:
+            obj.save()
+            print(obj.id)
+            return
+        if argc > 1:
+            key = f"{name}.{obj.id}"
+            params_dict = {}
+            for item in args[1:]:
+                key, value = item.split("=")
+                params_dict[key] = self.convert_value(key, value)
+            for key, value in params_dict.items():
+                setattr(obj, key, value)
             obj.save()
             print(obj.id)
 
@@ -102,7 +138,7 @@ class HBNBCommand(cmd.Cmd):
         cls.all(self, name)
 
     def do_update(self, arg):
-        """Updates """
+        """Updates"""
         args = shlex.split(arg)
         argc = len(args)
         if argc == 0:
@@ -155,7 +191,7 @@ class HBNBCommand(cmd.Cmd):
             elif method == "count":
                 cls.count(self, name)
             elif method == "show":
-                inst_id = method_args.strip('"\'')
+                inst_id = method_args.strip("\"'")
                 if inst_id == "":
                     print("** instance id missing **")
                     return
@@ -165,7 +201,7 @@ class HBNBCommand(cmd.Cmd):
                     return
                 print(storage.all()[key])
             elif method == "destroy":
-                inst_id = method_args.strip('"\'')
+                inst_id = method_args.strip("\"'")
                 if inst_id == "":
                     print("** instance id missing **")
                     return
