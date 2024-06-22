@@ -23,9 +23,11 @@ class FileStorage:
         :return: all the objs in the storage.
         """
         if obj is not None:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            if key in FileStorage.__objects:
-                return FileStorage.__objects[key]
+            filtered_dict = {}
+            for key, value in FileStorage.__objects.items():
+                if isinstance(value, obj):
+                    filtered_dict[key] = value
+            return filtered_dict
         return FileStorage.__objects
 
     def delete(self, obj=None):

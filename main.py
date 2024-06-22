@@ -1,27 +1,48 @@
 #!/usr/bin/python3
-from models import storage
-from models.base_model import BaseModel
-from models.user import User
+""" Test delete feature
+"""
+from models.engine.file_storage import FileStorage
+from models.state import State
 
-all_objs = storage.all()
-print("-- Reloaded objects --")
-for obj_id in all_objs.keys():
-    obj = all_objs[obj_id]
-    print(obj)
+fs = FileStorage()
 
-print("-- Create a new User --")
-my_user = User()
-my_user.first_name = "Betty"
-my_user.last_name = "Bar"
-my_user.email = "airbnb@mail.com"
-my_user.password = "root"
-my_user.save()
-print(my_user)
+# All States
+all_states = fs.all(State)
+print("All States: {}".format(len(all_states.keys())))
+for state_key in all_states.keys():
+    print(all_states[state_key])
 
-print("-- Create a new User 2 --")
-my_user2 = User()
-my_user2.first_name = "John"
-my_user2.email = "airbnb2@mail.com"
-my_user2.password = "root"
-my_user2.save()
-print(my_user2)
+# Create a new State
+new_state = State()
+new_state.name = "California"
+fs.new(new_state)
+fs.save()
+print("New State: {}".format(new_state))
+
+# All States
+all_states = fs.all(State)
+print("All States: {}".format(len(all_states.keys())))
+for state_key in all_states.keys():
+    print(all_states[state_key])
+
+# Create another State
+another_state = State()
+another_state.name = "Nevada"
+fs.new(another_state)
+fs.save()
+print("Another State: {}".format(another_state))
+
+# All States
+all_states = fs.all(State)
+print("All States: {}".format(len(all_states.keys())))
+for state_key in all_states.keys():
+    print(all_states[state_key])
+
+# Delete the new State
+fs.delete(new_state)
+
+# All States
+all_states = fs.all(State)
+print("All States: {}".format(len(all_states.keys())))
+for state_key in all_states.keys():
+    print(all_states[state_key])
