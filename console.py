@@ -2,7 +2,6 @@
 """Documenting the console module"""
 import ast
 import cmd
-from os import sched_yield
 import shlex
 import re
 from models import storage
