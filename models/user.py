@@ -7,7 +7,8 @@ from models.base_model import BaseModel, Base
 
 class User(BaseModel, Base):
     """The user class"""
-    __tablename__ = "users"
+    __tablename__ = 'users'
+
     if HBNB_TYPE_STORAGE == "db":
         email = Column(String(128), nullable=False)
         password = Column(String(128), nullable=False)
