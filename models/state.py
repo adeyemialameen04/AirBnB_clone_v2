@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
 from models.base_model import BaseModel, Base
-from config import HBNB_TYPE_STORAGE
+from envs import HBNB_TYPE_STORAGE
 from models.city import City
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship

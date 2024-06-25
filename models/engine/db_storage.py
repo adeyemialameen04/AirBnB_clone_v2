@@ -35,33 +35,41 @@ class DBStorage:
     __session = None
 
     def __init__(self) -> None:
-        """Db storage"""
-        conn_str = f"mysql+mysqldb://{HBNB_MYSQL_USER}:{
-            HBNB_MYSQL_PWD}@{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}"
+        self.__engine = create_engine(
+            'mysql+mysqldb://{}:{}@{}/{}'.format(
+                HBNB_MYSQL_USER,
+                HBNB_MYSQL_PWD,
+                HBNB_MYSQL_HOST,
+                HBNB_MYSQL_DB
+            ), pool_pre_ping=True)
 
-        self.__engine = create_engine(conn_str, pool_pre_ping=True)
-
-        if HBNB_ENV == "test":
-            metadata = MetaData(bind=DBStorage.__engine)
-            all_table = metadata.sorted_tables
-
-            for table in all_table:
-                table.drop(self.__engine)
+        if HBNB_ENV == 'test':
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """Gets all instances"""
+        dct = {}
         if cls is None:
-            object = self.__session.query(
-                City).all() + self.__session.query(State).all()
-            return {f"{obj.__class__.__name__}": obj for obj in object}
+            for c in classes.values():
+                for obj in self.__session.query(c).all():
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    dct[key] = obj
         else:
-            className = classes[cls]
-            object = self.__session.query(className).all()
-            return {f"{obj.__class__.__name__}": obj for obj in object}
+            for obj in self.__session.query(cls).all():
+                key = obj.__class__.__name__ + '.' + obj.id
+                dct[key] = obj
+        return dct
 
     def new(self, obj):
         """New instance"""
-        self.__session.add(obj)
+        if obj is not None:
+            try:
+                self.__session.add(obj)
+                self.__session.flush()
+                self.__session.refresh(obj)
+            except Exception as ex:
+                self.__session.rollback()
+                raise ex
 
     def save(self):
         """Saves instance"""
@@ -74,11 +82,10 @@ class DBStorage:
 
     def reload(self):
         """Reload db"""
-        Base.metadata.create_all(bind=self.__engine)
-
-        Session = scoped_session(sessionmaker(
-            bind=self.__engine, expire_on_commit=False))
-        self.__session = Session()
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
+        self.__session = scoped_session(session_factory)()
 
     def close(self):
         """Close session"""
