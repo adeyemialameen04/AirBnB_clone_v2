@@ -12,6 +12,7 @@ from models.city import City
 from models.review import Review
 from models.place import Place
 from models.amenity import Amenity
+from envs import HBNB_TYPE_STORAGE
 
 
 classes = {
@@ -34,7 +35,11 @@ class HBNBCommand(cmd.Cmd):
     def convert_value(self, key, value):
         if key in ['number_rooms', 'number_bathrooms', 'max_guest', 'price_by_night']:
             return int(value)
-        elif '.' in value:
+        elif value.startswith('"') and value.endswith('"'):
+            return value.strip('"').replace("_", " ")
+        elif value.isnumeric():
+            return int(value)
+        elif value.replace(".", "", 1).isnumeric():
             return float(value)
         else:
             return value.replace("_", " ")
@@ -91,6 +96,8 @@ class HBNBCommand(cmd.Cmd):
             obj.save()
             print(obj.id)
             return
+        print(f"\n\n\n\n {argc}  \n\n\n\n")
+
         if argc > 1:
             key = f"{name}.{obj.id}"
             params_dict = {}
