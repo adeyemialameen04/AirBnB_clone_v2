@@ -3,10 +3,20 @@
 from datetime import datetime
 from uuid import uuid4
 import models
+from sqlalchemy import Column, String, DateTime
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 
 class BaseModel:
     """BaseModel for Airbnb"""
+    id = Column("id", String(60), primary_key=True, nullable=False)
+    created_at = Column("created_at", DateTime,
+                        nullable=False, default=datetime.utcnow())
+    updated_at = Column("updated_at", DateTime,
+                        nullable=False, default=datetime.utcnow(),
+                        onupdate=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
         """
@@ -17,15 +27,13 @@ class BaseModel:
             for key, value in kwargs.items():
                 if key != "__class__":
                     if key in dates_var:
-                        obj_dict = self.__dict__
-                        obj_dict[key] = datetime.fromisoformat(value)
+                        setattr(self, key, datetime.fromisoformat(value))
                     else:
                         setattr(self, key, value)
         else:
             self.id = str(uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            models.storage.new(self)
 
     def __str__(self):
         """
@@ -41,6 +49,7 @@ class BaseModel:
         :return: Nothing.
         """
         self.updated_at = datetime.now()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
@@ -54,6 +63,9 @@ class BaseModel:
         for key, value in obj_dict.items():
             if key in dates_var:
                 obj_dict[key] = value.isoformat()
+
+        if '_sa_instance_state' in obj_dict.keys():
+            del obj_dict['_sa_instance_state']
 
         return obj_dict
 
@@ -80,3 +92,7 @@ class BaseModel:
                 count += 1
 
         print(count)
+
+    def delete(self):
+        """Commits suicide"""
+        models.storage.delete(self)
