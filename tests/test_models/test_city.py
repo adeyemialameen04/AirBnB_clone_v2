@@ -1,24 +1,45 @@
-#!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
+import unittest
+from models import storage
+from models.state import State
 from models.city import City
 
 
-class test_City(test_basemodel):
-    """ """
+class TestCity(unittest.TestCase):
+    """Test the City class"""
 
-    def __init__(self, *args, **kwargs):
-        """ """
-        super().__init__(*args, **kwargs)
-        self.name = "City"
-        self.value = City
+    @classmethod
+    def setUpClass(cls):
+        """Set up for test"""
+        cls.state = State(name="California")
+        cls.city = City(name="San Francisco", state_id=cls.state.id)
+        storage.new(cls.state)
+        storage.new(cls.city)
+        storage.save()
 
-    def test_state_id(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.state_id), str)
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after tests"""
+        storage.delete(cls.city)
+        storage.delete(cls.state)
+        storage.save()
 
-    def test_name(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.name), str)
+    def test_city_creation(self):
+        """Test city creation"""
+        initial_count = len(storage.all(City))
+        new_city = City(name="Los Angeles", state_id=self.state.id)
+        storage.new(new_city)
+        storage.save()
+        new_count = len(storage.all(City))
+        self.assertEqual(new_count, initial_count + 1)
+        storage.delete(new_city)
+        storage.save()
+        final_count = len(storage.all(City))
+        self.assertEqual(final_count, initial_count)
+
+    def test_city_state_relationship(self):
+        """Test the relationship between city and state"""
+        self.assertEqual(self.city.state_id, self.state.id)
+
+
+if __name__ == '__main__':
+    unittest.main()

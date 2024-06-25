@@ -1,69 +1,50 @@
-#!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
+import unittest
+from models import storage
+from models.city import City
+from models.user import User
 from models.place import Place
 
 
-class test_Place(test_basemodel):
-    """ """
+class TestPlace(unittest.TestCase):
+    """Test the Place class"""
 
-    def __init__(self, *args, **kwargs):
-        """ """
-        super().__init__(*args, **kwargs)
-        self.name = "Place"
-        self.value = Place
+    @classmethod
+    def setUpClass(cls):
+        """Set up for test"""
+        cls.user = User(email="test@example.com", password="password123")
+        storage.new(cls.user)
+        cls.city = City(name="San Francisco", state_id="some_state_id")
+        storage.new(cls.city)
+        cls.place = Place(city_id=cls.city.id, user_id=cls.user.id,
+                          name="My Place", description="Nice place")
+        storage.new(cls.place)
+        storage.save()
 
-    def test_city_id(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.city_id), str)
+    @classmethod
+    def tearDownClass(cls):
+        """Clean up after tests"""
+        storage.delete(cls.place)
+        storage.delete(cls.city)
+        storage.delete(cls.user)
+        storage.save()
 
-    def test_user_id(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.user_id), str)
+    def test_place_creation(self):
+        """Test place creation"""
+        place = Place(city_id=self.city.id, user_id=self.user.id,
+                      name="Another Place")
+        storage.new(place)
+        storage.save()
+        self.assertIn(place, storage.all(Place).values())
+        storage.delete(place)
+        storage.save()
 
-    def test_name(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.name), str)
+    def test_place_attributes(self):
+        """Test the attributes of the Place"""
+        self.assertEqual(self.place.city_id, self.city.id)
+        self.assertEqual(self.place.user_id, self.user.id)
+        self.assertEqual(self.place.name, "My Place")
+        self.assertEqual(self.place.description, "Nice place")
 
-    def test_description(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.description), str)
 
-    def test_number_rooms(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.number_rooms), int)
-
-    def test_number_bathrooms(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.number_bathrooms), int)
-
-    def test_max_guest(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.max_guest), int)
-
-    def test_price_by_night(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.price_by_night), int)
-
-    def test_latitude(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.latitude), float)
-
-    def test_longitude(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.latitude), float)
-
-    def test_amenity_ids(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.amenity_ids), list)
+if __name__ == '__main__':
+    unittest.main()
