@@ -14,13 +14,16 @@ from models.place import Place
 from models.amenity import Amenity
 
 
+classes = {
+    'BaseModel': BaseModel, 'User': User, 'Place': Place,
+    'State': State, 'City': City, 'Amenity': Amenity,
+    'Review': Review
+}
+
+
 class HBNBCommand(cmd.Cmd):
     """Documentation for the console"""
-    classes = {
-        'BaseModel': BaseModel, 'User': User, 'Place': Place,
-        'State': State, 'City': City, 'Amenity': Amenity,
-        'Review': Review
-    }
+
     methods = ["all()", "count()"]
 
     prompt = "(hbnb) "
@@ -122,21 +125,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """Gets all."""
-        print_list = []
+        result = []
 
         if args:
-            args = args.split(' ')[0]
-            if args not in HBNBCommand.classes:
+            name = args.split(' ')[0]
+            cls = globals().get(args)
+            if cls is None:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all(HBNBCommand.classes[args]).items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            for key, value in storage.all(classes[name]).items():
+                if key.split('.')[0] == args:
+                    result.append(str(value))
         else:
-            for k, v in storage.all().items():
-                print_list.append(str(v))
+            for key, value in storage.all().items():
+                result.append(str(value))
 
-        print(print_list)
+        print(result)
 
     def do_update(self, arg):
         """Updates"""

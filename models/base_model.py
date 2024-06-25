@@ -69,18 +69,18 @@ class BaseModel:
 
         return obj_dict
 
-    def all(self, name):
-        """
-        Handles the class all for a particular name.
-        :param name: The name of the class.
-        :return: Nothing.
-        """
-        objs = []
-
-        for key, value in models.storage.all().items():
-            if key.startswith(name):
-                objs.append(str(value))
-        print(objs)
+    # def all(self, name):
+    #     """
+    #     Handles the class all for a particular name.
+    #     :param name: The name of the class.
+    #     :return: Nothing.
+    #     """
+    #     objs = []
+    #
+    #     for key, value in models.storage.all().items():
+    #         if key.startswith(name):
+    #             objs.append(str(value))
+    #     print(objs)
 
     def count(self, name):
         """
