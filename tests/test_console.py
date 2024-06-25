@@ -5,6 +5,7 @@ from console import HBNBCommand
 from models import storage
 from models.base_model import BaseModel
 
+
 class TestConsole(unittest.TestCase):
     """Test cases for the HBNBCommand class"""
 
@@ -61,7 +62,8 @@ class TestConsole(unittest.TestCase):
         attr_name = "name"
         attr_value = "Test Model"
         with patch('sys.stdout', new=StringIO()):
-            self.console.onecmd(f"update BaseModel {obj_id} {attr_name} '{attr_value}'")
+            self.console.onecmd(f"update BaseModel {obj_id} {
+                                attr_name} '{attr_value}'")
         self.assertEqual(getattr(self.obj, attr_name), attr_value)
 
     def test_default(self):
