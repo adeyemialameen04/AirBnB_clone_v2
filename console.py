@@ -16,7 +16,11 @@ from models.amenity import Amenity
 
 class HBNBCommand(cmd.Cmd):
     """Documentation for the console"""
-
+    classes = {
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
     methods = ["all()", "count()"]
 
     prompt = "(hbnb) "
@@ -116,24 +120,23 @@ class HBNBCommand(cmd.Cmd):
             del storage.all()[key]
             storage.save()
 
-    def do_all(self, arg):
+    def do_all(self, args):
         """Gets all."""
-        args = shlex.split(arg)
-        argc = len(args)
-        objs = []
-        if argc == 0:
-            for obj in storage.all().values():
-                objs.append(str(obj))
-            print(objs)
-            return
+        print_list = []
 
-        name = args[0]
-        cls = globals().get(name)
-        if cls is None:
-            print("** class doesn't exist **")
-            return
+        if args:
+            args = args.split(' ')[0]
+            if args not in HBNBCommand.classes:
+                print("** class doesn't exist **")
+                return
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
+                if k.split('.')[0] == args:
+                    print_list.append(str(v))
+        else:
+            for k, v in storage.all().items():
+                print_list.append(str(v))
 
-        cls.all(self, name)
+        print(print_list)
 
     def do_update(self, arg):
         """Updates"""

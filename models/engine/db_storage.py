@@ -48,17 +48,19 @@ class DBStorage:
 
     def all(self, cls=None):
         """Gets all instances"""
-        obj_dict = {}
-        if cls is None:
-            for item in classes.values():
-                for obj in self.__session.query(item).all():
-                    key = obj.__class__.__name__ + '.' + obj.id
-                    obj_dict[key] = obj
+        new_dict = {}
+        if cls:
+            objs = self.__session.query(cls).all()
+            for obj in objs:
+                key = f"{obj.__class__.__name__}.{obj.id}"
+                new_dict[key] = obj
         else:
-            for obj in self.__session.query(cls).all():
-                key = obj.__class__.__name__ + '.' + obj.id
-                obj_dict[key] = obj
-        return obj_dict
+            for cls in classes.values():
+                objs = self.__session.query(cls).all()
+                for obj in objs:
+                    key = f"{obj.__class__.__name__}.{obj.id}"
+                    new_dict[key] = obj
+        return new_dict
 
     def new(self, obj):
         """New instance"""
