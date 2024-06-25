@@ -1,5 +1,5 @@
 #!/bin/bash
-
-find . -type f -name "*.py" -not -path '*/\.*' | while read -r file; do
-    pycodestyle "$file"
+find . -type f -name "*.py" -not -path '*/\.*' -not -path '*/venv/*' | while read -r file; do
+	pycodestyle "$file"
 done
+
