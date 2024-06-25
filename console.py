@@ -30,7 +30,6 @@ class HBNBCommand(cmd.Cmd):
         elif '.' in value:
             return float(value)
         else:
-            print("\n\n", value, "\n\n")
             return value.replace("_", " ")
 
     def parse_arg(self, arg):
