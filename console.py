@@ -33,7 +33,8 @@ class HBNBCommand(cmd.Cmd):
         print("\033[2J\033[H", end="", flush=True)
 
     def convert_value(self, key, value):
-        if key in ['number_rooms', 'number_bathrooms', 'max_guest', 'price_by_night']:
+        if key in ['number_rooms', 'number_bathrooms', 'max_guest',
+                   'price_by_night']:
             return int(value)
         elif value.startswith('"') and value.endswith('"'):
             return value.strip('"').replace("_", " ")
