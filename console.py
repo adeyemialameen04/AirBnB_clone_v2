@@ -97,7 +97,6 @@ class HBNBCommand(cmd.Cmd):
             obj.save()
             print(obj.id)
             return
-        print(f"\n\n\n\n {argc}  \n\n\n\n")
 
         if argc > 1:
             key = f"{name}.{obj.id}"
