@@ -1,22 +1,25 @@
 #!/usr/bin/python3
-""" """
-from tests.test_models.test_base_model import test_basemodel
+
+import unittest
 from models.amenity import Amenity
-from envs import HBNB_TYPE_STORAGE
+from models.engine.file_storage import FileStorage
 
 
-class test_Amenity(test_basemodel):
-    """ amenity test class"""
+class TestUser(unittest.TestCase):
+    def setUp(self):
+        self.amenity = Amenity()
+        self.storage = FileStorage()
+        self.amenity.name = "Isaac"
 
-    def __init__(self, *args, **kwargs):
-        """inti the test class """
-        super().__init__(*args, **kwargs)
-        self.name = "Amenity"
-        self.value = Amenity
+    def tearDown(self):
+        self.storage._FileStorage__object = {}
 
-    def test_name2(self):
-        """testing name type """
-        new = self.value()
-        self.assertEqual(type(new.name), str if
-                         HBNB_TYPE_STORAGE != 'db' else
-                         type(None))
+    def test_attributes(self):
+        self.assertEqual(self.amenity.name, "Isaac")
+        self.assertIsNotNone(self.amenity.created_at)
+        self.assertIsNotNone(self.amenity.updated_at)
+        self.assertIsNotNone(self.amenity.id)
+
+
+if __name__ == "__main__":
+    unittest.main()
