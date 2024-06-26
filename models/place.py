@@ -3,6 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from envs import HBNB_TYPE_STORAGE
+from sqlalchemy.orm import relationship
 
 
 class Place(BaseModel, Base):
@@ -20,6 +21,15 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
+
+        def reviews(self):
+            from models.review import Review
+            import models
+            temp = {}
+            for key, value in models.storage.all(Review).items():
+                if value.to_dict()["Place.id"] == self.id:
+                    temp.update({key, value})
+            return temp
     else:
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -31,4 +41,5 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, default=0, nullable=False)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
-        # reviews = relationship("Review", backref="place", cascade="all, delete")
+        reviews = relationship("Review", backref="place",
+                               cascade="all, delete")
