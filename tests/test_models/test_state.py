@@ -2,7 +2,7 @@
 """ """
 from tests.test_models.test_base_model import test_basemodel
 from models.state import State
-from config import HBNB_TYPE_STORAGE
+from envs import HBNB_TYPE_STORAGE
 
 
 class test_state(test_basemodel):

@@ -11,7 +11,10 @@ from envs import HBNB_TYPE_STORAGE
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
+    if HBNB_TYPE_STORAGE == "db":
+        name = Column(String(128), nullable=False)
+    else:
+        name = ""
 
     if HBNB_TYPE_STORAGE == "db":
         cities = relationship(

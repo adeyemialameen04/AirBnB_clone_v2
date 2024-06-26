@@ -5,7 +5,7 @@ import MySQLdb
 from models.user import User
 from models import storage
 from datetime import datetime
-from config import (
+from envs import (
     HBNB_TYPE_STORAGE,
     HBNB_MYSQL_DB,
     HBNB_MYSQL_USER,

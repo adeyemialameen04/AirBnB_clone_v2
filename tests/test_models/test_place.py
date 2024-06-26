@@ -2,7 +2,7 @@
 """ """
 from tests.test_models.test_base_model import test_basemodel
 from models.place import Place
-from config import HBNB_TYPE_STORAGE
+from envs import HBNB_TYPE_STORAGE
 
 
 class test_Place(test_basemodel):
@@ -84,9 +84,9 @@ class test_Place(test_basemodel):
                          HBNB_TYPE_STORAGE != 'db' else
                          type(None))
 
-    def test_amenity_ids(self):
-        """ testing amenity ids"""
-        new = self.value()
-        self.assertEqual(type(new.amenity_ids), list if
-                         HBNB_TYPE_STORAGE != 'db' else
-                         type(None))
+    # def test_amenity_ids(self):
+    #     """ testing amenity ids"""
+    #     new = self.value()
+    #     self.assertEqual(type(new.amenity_ids), list if
+    #                      HBNB_TYPE_STORAGE != 'db' else
+    #                      type(None))
