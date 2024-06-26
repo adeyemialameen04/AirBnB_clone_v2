@@ -1,9 +1,15 @@
 #!/usr/bin/python3
 """Place module"""
+from models.amenity import Amenity
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, ForeignKey, Float
+from sqlalchemy import Column, String, Integer, ForeignKey, Float, Table
 from envs import HBNB_TYPE_STORAGE
 from sqlalchemy.orm import relationship
+
+place_amenity = Table('place_amenity', Base.metadata,
+                      Column('place_id', String(60), ForeignKey(
+                          'places.id'), primary_key=True, nullable=False),
+                      Column('amenity_id', String(60), ForeignKey('amenities.id'), primary_key=True, nullable=False))
 
 
 class Place(BaseModel, Base):
@@ -30,6 +36,21 @@ class Place(BaseModel, Base):
                 if value.to_dict()["Place.id"] == self.id:
                     temp.update({key, value})
             return temp
+
+        @property
+        def amenities(self):
+            """Getter for amenities when using FileStorage"""
+            from models import storage
+            amenity_list = []
+            for amenity_id in self.amenity_ids:
+                amenity_list.append(storage.get(Amenity, amenity_id))
+            return amenity_list
+
+        @amenities.setter
+        def amenities(self, obj):
+            """Setter for amenities when using FileStorage"""
+            if isinstance(obj, Amenity):
+                self.amenity_ids.append(obj.id)
     else:
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -43,3 +64,5 @@ class Place(BaseModel, Base):
         longitude = Column(Float, nullable=True)
         reviews = relationship("Review", backref="place",
                                cascade="all, delete")
+        amenities = relationship(
+            "Amenity", secondary=place_amenity, back_populates="place_amenities", viewonly=False)
